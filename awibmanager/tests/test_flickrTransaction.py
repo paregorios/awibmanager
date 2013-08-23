@@ -6,7 +6,7 @@ from awibmanager.flickrauth import API_KEY, API_SECRET
 fakekey = "808d178419ca0530256bad11db83e147" 
 fakesecret = "c06e45cb34a8052e"  
 
-class FlickrTransactionCase(unittest.TestCase):
+class FlickrTransactionInitCase(unittest.TestCase):
 
 	def test_instantiate(self):
 		ft = FlickrTransaction()
@@ -28,3 +28,7 @@ class FlickrTransactionCase(unittest.TestCase):
 		self.assertTrue(ft.auth)
 		self.assertEqual(ft.emsg, '')
 
+class FlickrTransactionParseCase(unittest.TestCase):
+
+	pass
+	
