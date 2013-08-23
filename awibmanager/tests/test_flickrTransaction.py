@@ -30,5 +30,21 @@ class FlickrTransactionInitCase(unittest.TestCase):
 
 class FlickrTransactionParseCase(unittest.TestCase):
 
-	pass
-	
+	def test_func_not_in_flickrapi(self):
+		ft = FlickrTransaction(key=API_KEY, secret=API_SECRET)
+		if ft is not None:			
+			if ft.auth:
+				storks = ft.getList('storks')
+				print ft.emsg
+				self.assertEqual(storks, None)
+				self.assertEqual(ft.emsg, 'Flickr API responded with failure message: 112: Method "flickr.storks.getList" not found')
+
+	def test_func_in_flickrapi(self):
+		ft = FlickrTransaction(key=API_KEY, secret=API_SECRET)
+		if ft is not None:			
+			if ft.auth:
+				blogs = ft.getList('blogs')
+				print ft.emsg	
+				self.assertNotEqual(blogs, None)
+				self.assertEqual(ft.emsg, '')
+
