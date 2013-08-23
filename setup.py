@@ -14,4 +14,5 @@ setup(
     license='See LICENSE.txt',
     description='Scripts for managing the Ancient World Image Bank (AWIB)',
     long_description=open('README.txt').read(),
+    install_requires = ['flickrapi>=1.4.2'],
 )
