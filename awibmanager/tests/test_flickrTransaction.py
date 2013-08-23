@@ -16,6 +16,7 @@ class FlickrTransationCase(unittest.TestCase):
 		ft = FlickrTransaction(key=fakekey, secret=fakesecret, auth=False)
 		self.assertEqual(ft.key, fakekey)
 		self.assertEqual(ft.secret, fakesecret)
+		self.assertEqual(ft.auth, None)
 
 	def test_auth_fail(self):
 		ft = FlickrTransaction(key=fakekey, secret=fakesecret)
