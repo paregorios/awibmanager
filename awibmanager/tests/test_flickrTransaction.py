@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from awibmanager.flickrtransaction import FlickrTransaction
 from awibmanager.flickrauth import API_KEY, API_SECRET
 
@@ -48,3 +49,14 @@ class FlickrTransactionParseCase(unittest.TestCase):
 				self.assertNotEqual(blogs, None)
 				self.assertEqual(ft.emsg, '')
 
+class FlickrUploadCase(unittest.TestCase):
+
+	def test_upload(self):
+		t = datetime.now()
+		fn = 'foo %s' % t.strftime('%Y-%m-%dT%H:%M:%S')
+		title = 'foo photo (%s)' % t.strftime('%Y-%m-%dT%H:%M:%S')
+		desc = 'foo bar'
+		tags = '''foo "foo bar" bar'''
+		public = 0
+		ft = FlickrTransaction(key=API_KEY, secret=API_SECRET)
+		ft.upload(fn, title, desc, tags, public)
