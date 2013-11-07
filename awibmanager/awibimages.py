@@ -4,11 +4,13 @@ from flickrauth import API_KEY, API_SECRET
 from lxml import etree
 from os.path import isdir, isfile, join
 import re
+import simplejson as json
 import sys
+import urllib2
 
 RX_FLICKR_URL = re.compile('^(http:\/\/www\.flickr\.com\/photos\/[^\/]+\/)(\d+)\/?$')
 RX_FLICRK_URL_SET = re.compile('^(http:\/\/www\.flickr\.com\/photos\/[^\/]+\/)(\d+)\/in\/set-(\d+)\/?$')
-
+RX_PLEIADES_URL = re.compile('^(http:\/\/pleiades\.stoa\.org\/places\/)(\d+)\/?.*$')
 
 
 def fileval(root, interstitial, id, tail):
@@ -28,11 +30,14 @@ def getFlickr(key=API_KEY, secret=API_SECRET):
 class AI():
     """ handle all information, behaviors, and avatars of an AWIB image """
 
-    def __init__(self, id, path='.', verify=['flickr', 'pleiades']):
+    def __init__(self, id, path='.', verify=['pleiades',]):
         """ initialize an AWIB image object by reading data from disk and verifying online sources as necessary """
 
         self.modified = False
         self.mods = []
+        self.flickr_verified = False
+        self.pleiades_verified = False
+        self.pleiades_json = {}
 
         # the awib ID is the one ring to rule all these images
         self.id = id
@@ -62,7 +67,6 @@ class AI():
 
             # read and parse filesystem metadata
             self.loadxml()
-            self.__str__()
 
         # determine and validate information about this image in flickr
         if 'flickr' in verify:
@@ -76,6 +80,8 @@ class AI():
 
 
         # TBD
+        self.__str__()
+
 
     def loadxml(self):
         """ load AWIB image data from standard metadata XML file """
@@ -88,6 +94,7 @@ class AI():
         given = ''
         f = open(self.fn_meta)
         meta = etree.parse(f)
+        self.meta = meta
         f.close()
         w = "//info[@type='isaw']"
         for ele in meta.xpath(join(w, "*")):
@@ -101,7 +108,7 @@ class AI():
                     d['name'] = ele.text
                 if 'name' not in d.keys() and 'family_name' in d.keys() and 'given_name' in d.keys():
                     d['name'] = ' '.join((d['given_name'], d['family_name']))
-                    self.logmod('add', join(w, 'photographer'), 'generated full name for photographer from given and family names already in the metadata file')
+                    self.logmod('add', join(meta.getpath(ele), 'name'), len(self.photographers), 'generated full name for photographer from given and family names already in the metadata file')
                 if len(d) > 0:
                     self.photographers.append(d)
 
@@ -117,7 +124,15 @@ class AI():
                         if len(sub) != 0:
                             d['type'] = sub.tag
                             for subsub in sub:
-                                if subsub.text is not None:
+                                if subsub.tag == 'uri':
+                                    m = RX_PLEIADES_URL.match(subsub.text)
+                                    if m is not None:
+                                        g = m.groups()
+                                        uri = join(g[0], g[1])
+                                        if subsub.text != uri:
+                                            self.logmod('change', meta.getpath(subsub), notes='removed extraneous elements from the Pleiades URI')
+                                        d['uri'] = uri
+                                elif subsub.text is not None:
                                     d[subsub.tag.replace('-', '_')] = subsub.text
                         if len(d) > 0:
                             self.geography.append(d)
@@ -133,7 +148,7 @@ class AI():
                     g = m.groups()
                     flickr_url = join(g[0], g[1])
                     if ele.text != flickr_url:
-                        self.logmod('change', join(w, 'flickr-url'), 'removed extraneous elements from the flickr URL')
+                        self.logmod('change', meta.getpath(ele), notes='removed extraneous elements from the flickr URL')
                     self.flickr_url = flickr_url                    
                     flickr_id = g[1]
                     if len(g) > 2:
@@ -156,20 +171,21 @@ class AI():
             except AttributeError:
                 if flickr_id is not None:
                     setattr(self, 'flickr_id', flickr_id)
-                    self.logmod('add', join(w, 'flickr-id'), 'created flickr ID as extracted from flickr URL')
+                    self.logmod('add', join(w, 'flickr-id'), notes='created flickr ID as extracted from flickr URL')
             try:
                 getattr(self, 'flickr_set')
             except AttributeError:
                 if flickr_set is not None:
                     setattr(self, 'flickr_set', flickr_set)
-                    self.logmod('add', join(w, 'flickr-set'), 'created flickr set id as extracted from flickr URL')
+                    self.logmod('add', join(w, 'flickr-set'), notes='created flickr set id as extracted from flickr URL')
         except AttributeError:
             pass
 
 
-    def logmod(self, mtype, xpath, notes):
+    def logmod(self, mtype, xpath, seq=0, notes=None):
         self.modified = True
-        self.mods.append((mtype, xpath, notes))
+        t = (mtype, xpath, seq, notes)
+        self.mods.append(t)
 
     def verify_flickr(self):
         try:
@@ -181,11 +197,38 @@ class AI():
             r = flickr.photos_getInfo(photo_id=self.flickr_id)
             if r.attrib['stat'] != 'ok':
                 raise FlickrError('Flickr API reports photo_id=%s not found' % self.flickr_id)
+            else:
+                self.flickr_verified = True
 
     def verify_pleiades(self):
         """ verify Pleiades data associated with this image """
+        for g in self.geography:
+            print g
+            if 'uri' in g.keys():
+                print "in"
+                m = RX_PLEIADES_URL.match(g['uri'])
+                if m is not None:
+                    print "match"
+                    jurl = join(g['uri'], 'json')
+                    try:
+                        results = json.load(urllib2.urlopen(jurl))
+                    except urllib2.HTTPError as e:
+                        g['verified'] = e.message
+                    else:
+                        if 'verified' not in g.keys():
+                            self.logmod('add', join(self.meta.getpath(self.meta.xpath("//*[starts-with(uri, '%s')]" % g['uri'])[0]), 'verified'), notes='verified Pleiades URI')
+                        g['verified'] = True
+                        s = json.dumps(results, sort_keys=True, indent=4)
+                        print '\n'.join([l.rstrip() for l in  s.splitlines()])
+        self.pleiades_verified = True
 
-        pass
+    def get_pleiades_json(self, uri):
+        pid = uri.replace('http://pleiades.stoa.org/places/', '')
+        try:
+            return self.pleiades_json[pid]
+        except KeyError:
+            jurl = join(g['uri'], 'json')
+            
 
     def __str__(self):
         """ output a serialized version of this object and its content """
