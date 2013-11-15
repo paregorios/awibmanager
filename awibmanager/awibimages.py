@@ -1,10 +1,14 @@
 import datetime
+import errno
 from flickrapi import FlickrAPI, FlickrError
 from flickrauth import API_KEY, API_SECRET
 from lxml import etree
-from os.path import isdir, isfile, join
+from os import makedirs
+from os.path import abspath, exists, isdir, isfile, join, splitext
+from PIL import Image, ImageCms
 import re
 import simplejson as json
+import subprocess
 import sys
 import urllib2
 
@@ -12,6 +16,13 @@ RX_FLICKR_URL = re.compile('^(http:\/\/www\.flickr\.com\/photos\/[^\/]+\/)(\d+)\
 RX_FLICRK_URL_SET = re.compile('^(http:\/\/www\.flickr\.com\/photos\/[^\/]+\/)(\d+)\/in\/set-(\d+)\/?$')
 RX_PLEIADES_URL = re.compile('^(http:\/\/pleiades\.stoa\.org\/places\/)(\d+)\/?.*$')
 
+PROFILE_SRGB = 'awibmanager/icc/sRGB_IEC61966-2-1_black_scaled.icc'
+
+def getMemoryProfile(buffer):
+    try:
+        return ImageCms.core.profile_fromstring(buffer)
+    except (IOError, TypeError, ValueError), v:
+        raise PyCMSError(v)
 
 def fileval(root, interstitial, id, tail):
     fn = join(root, interstitial, '-'.join((id, tail)))
@@ -80,7 +91,6 @@ class AI():
 
 
         # TBD
-        self.__str__()
 
 
     def loadxml(self):
@@ -154,9 +164,6 @@ class AI():
                     if len(g) > 2:
                         flickr_set = g[2]
 
-
-
-
             elif ele.tag in ['prosopography', 'notes', 'chronology']:
                 # suppress these for now
                 pass
@@ -181,6 +188,45 @@ class AI():
         except AttributeError:
             pass
 
+    def prep_for_flickr(self):
+        """ prepares image for upload to flickr """
+
+        # create a PNG
+        im_master = Image.open(self.fn_master)
+        try:
+            pf = ImageCms.core.profile_fromstring(im_master.info['icc_profile'])
+        except AttributeError as e:
+            raise type(e), type(e)(e.message + " no icc profile defined on master image '%s'" % self.fn_master), sys.exc_info()[2]
+        else:
+            im_flickr2 = ImageCms.profileToProfile(im_master, pf, PROFILE_SRGB)
+            path = join(self.path, 'flickr2')
+            try:
+                makedirs(path)
+            except OSError as exception:
+                if exception.errno != errno.EEXIST:
+                    raise            
+            fn = join(path, self.id + '.png')
+            if exists(fn):
+                raise IOError("'file exists :'%s'" % fn)
+            else:
+                im_flickr2.save(fn, format='PNG')
+                self.fn_flickr2 = fn
+                subprocess.call(['exiftool',
+                 '-tagsFromFile',
+                 self.fn_master,
+                 fn], shell=True)
+
+
+
+        # create metadata
+
+
+    def send_to_flickr(self):
+        if isfile(self.fn_flickr2):
+            flickr = getFlickr()
+            resp = flickr.upload(filename=self.fn_flickr2, title=self.title, description=self.description, tags=' '.join(self.keywords), is_public=0)
+
+
 
     def logmod(self, mtype, xpath, seq=0, notes=None):
         self.modified = True
@@ -196,39 +242,42 @@ class AI():
             flickr = getFlickr()
             r = flickr.photos_getInfo(photo_id=self.flickr_id)
             if r.attrib['stat'] != 'ok':
-                raise FlickrError('Flickr API reports photo_id=%s not found' % self.flickr_id)
+                self.flickr_verified = 'Flickr API reports photo_id=%s not found' % self.flickr_id
+                raise FlickrError(self.flickr_verified)
             else:
                 self.flickr_verified = True
 
     def verify_pleiades(self):
         """ verify Pleiades data associated with this image """
         for g in self.geography:
-            print g
             if 'uri' in g.keys():
-                print "in"
                 m = RX_PLEIADES_URL.match(g['uri'])
                 if m is not None:
-                    print "match"
-                    jurl = join(g['uri'], 'json')
                     try:
-                        results = json.load(urllib2.urlopen(jurl))
+                        j = self.get_pleiades_json(g['uri'])
                     except urllib2.HTTPError as e:
                         g['verified'] = e.message
+                        raise
                     else:
                         if 'verified' not in g.keys():
                             self.logmod('add', join(self.meta.getpath(self.meta.xpath("//*[starts-with(uri, '%s')]" % g['uri'])[0]), 'verified'), notes='verified Pleiades URI')
                         g['verified'] = True
-                        s = json.dumps(results, sort_keys=True, indent=4)
-                        print '\n'.join([l.rstrip() for l in  s.splitlines()])
         self.pleiades_verified = True
 
     def get_pleiades_json(self, uri):
+        """ tries to download json associated with the place uri; does runtime caching of results """
         pid = uri.replace('http://pleiades.stoa.org/places/', '')
         try:
             return self.pleiades_json[pid]
         except KeyError:
-            jurl = join(g['uri'], 'json')
-            
+            jurl = join(uri, 'json')
+            try: 
+                results = json.load(urllib2.urlopen(jurl))
+            except urllib2.HTTPError as e:
+                raise type(e), type(e)(e.message + " while trying to get '%s'" % jurl), sys.exc_info()[2]
+            else:
+                self.pleiades_json[pid] = results
+                return results
 
     def __str__(self):
         """ output a serialized version of this object and its content """

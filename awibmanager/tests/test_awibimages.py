@@ -1,6 +1,7 @@
 
 import unittest
 from awibmanager.awibimages import AI
+from os import remove
 
 TESTAWIBID = 'isawi-201102172235161'
 TESTPATH = 'awibmanager/tests/data/pont-du-gard-france'
@@ -27,4 +28,9 @@ class AIInitCase(unittest.TestCase):
         except IOError as e:
             self.assertEqual(e[0], "'awibmanager/tests/data/empty/meta/isawi-201102172235161-meta.xml' is not a file while trying to set metadata filename")
 
+    def test_flickr_prep(self):
+        ai = AI(TESTAWIBID, TESTPATH)
+        ai.prep_for_flickr()
+        ai.send_to_flickr()
+        remove(ai.fn_flickr2)
 
