@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css"
+            href="../../../meta/meta-oxygen.css" title="Oxygen Authoring CSS" alternate="no" ?>
+<?oxygen RNGSchema="../../../meta/meta-schema.rnc"
+            type="compact" ?>
+<image-info>
+   <status>ready</status>
+   <license-release-verified>yes</license-release-verified>
+   <isaw-publish-cleared>yes</isaw-publish-cleared>
+   <review-notes/>
+   <image-files>
+      <image type="thumbnail" href="../thumbnails/isawi-201102172235162-thumb.jpg"/>
+      <image type="review" href="../review-images/isawi-201102172235162-review.jpg"/>
+      <image type="master" href="../masters/isawi-201102172235162-master.tif"/>
+      <image type="original" href="../originals/isawi-201102172235162-original.jpg"/>
+   </image-files>
+   <info type="original">
+      <original-file-name>PICT0006.JPG</original-file-name>
+      <origin>digital camera</origin>
+      <title/>
+      <flickr-url/>
+      <fda-handle/>
+      <photographer>
+         <name/>
+      </photographer>
+      <authority/>
+      <description/>
+      <date-photographed>2004-07-24</date-photographed>
+      <date-scanned/>
+      <copyright-holder/>
+      <copyright-date/>
+      <copyright-contact/>
+      <license>undetermined</license>
+   </info>
+   <info type="isaw">
+      <title>Pont du Gard (II)</title>
+      <flickr-url>http://www.flickr.com/photos/isawnyu/5456327093/in/set-72157626082793500/</flickr-url>
+      <fda-handle/>
+      <photographer>
+         <given-name>Erik</given-name>
+         <family-name>Hermans</family-name>
+      </photographer>
+      <authority/>
+      <description>The Roman aqueduct bridge at Pont du Gard in France.</description>
+      <date-photographed>2004-07-24</date-photographed>
+      <date-scanned/>
+      <copyright-holder>Erik Hermans</copyright-holder>
+      <copyright-date>2004-07-24</copyright-date>
+      <copyright-contact/>
+      <license>cc-by</license>
+      <geography>
+         <photographed-place>
+            <ancient-name/>
+            <modern-name>Pont du Gard</modern-name>
+            <uri>http://pleiades.stoa.org/places/149496/</uri>
+            <institution/>
+         </photographed-place>
+         <find-place/>
+         <original-place/>
+      </geography>
+      <chronology/>
+      <prosopography/>
+      <typology>
+         <keyword>ancient</keyword>
+         <keyword>history</keyword>
+         <keyword>civilization</keyword>
+         <keyword>France</keyword>
+         <keyword>Rome</keyword>
+         <keyword>Roman</keyword>
+         <keyword>pont</keyword>
+         <keyword>gard</keyword>
+         <keyword>bridge</keyword>
+         <keyword>aqueduct</keyword>
+         <keyword>architecture</keyword>
+         <keyword>arch</keyword>
+         <keyword>masonry</keyword>
+         <keyword>stone</keyword>
+         <keyword>structure</keyword>
+      </typology>
+      <notes/>
+   </info>
+   <change-history>
+      <change>
+         <date>2011-02-17</date>
+         <agent>script</agent>
+         <description>created this metadata file automatically, using (where available) information
+            extracted from the original image headers</description>
+      </change>
+      <change>
+         <date>2011-02-17</date>
+         <agent>Nate Nagy</agent>
+         <description>entered in isaw information, typology, and geography, and uploaded to
+            Flickr.</description>
+      </change>
+   </change-history>
+</image-info>

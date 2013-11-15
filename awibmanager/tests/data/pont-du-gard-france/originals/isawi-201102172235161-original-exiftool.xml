@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:about='/Volumes/Lacie2Big/images-work/rogerdigifoto/pont-du-gard-france/originals/isawi-201102172235161-original.jpg'
+  xmlns:et='http://ns.exiftool.ca/1.0/' et:toolkit='Image::ExifTool 7.76'
+  xmlns:ExifTool='http://ns.exiftool.ca/ExifTool/1.0/'
+  xmlns:File='http://ns.exiftool.ca/File/1.0/'
+  xmlns:IFD0='http://ns.exiftool.ca/EXIF/IFD0/1.0/'
+  xmlns:ExifIFD='http://ns.exiftool.ca/EXIF/ExifIFD/1.0/'
+  xmlns:Minolta='http://ns.exiftool.ca/MakerNotes/Minolta/1.0/'
+  xmlns:InteropIFD='http://ns.exiftool.ca/EXIF/InteropIFD/1.0/'
+  xmlns:IFD1='http://ns.exiftool.ca/EXIF/IFD1/1.0/'
+  xmlns:Composite='http://ns.exiftool.ca/Composite/1.0/'>
+ <ExifTool:ExifToolVersion>7.76</ExifTool:ExifToolVersion>
+ <File:FileName>isawi-201102172235161-original.jpg</File:FileName>
+ <File:Directory>/Volumes/Lacie2Big/images-work/rogerdigifoto/pont-du-gard-france/originals</File:Directory>
+ <File:FileSize>624 kB</File:FileSize>
+ <File:FileModifyDate>2011:02:17 17:35:15-05:00</File:FileModifyDate>
+ <File:FileType>JPEG</File:FileType>
+ <File:MIMEType>image/jpeg</File:MIMEType>
+ <File:ExifByteOrder>Little-endian (Intel, II)</File:ExifByteOrder>
+ <File:ImageWidth>1600</File:ImageWidth>
+ <File:ImageHeight>1200</File:ImageHeight>
+ <File:EncodingProcess>Baseline DCT, Huffman coding</File:EncodingProcess>
+ <File:BitsPerSample>8</File:BitsPerSample>
+ <File:ColorComponents>3</File:ColorComponents>
+ <File:YCbCrSubSampling>YCbCr4:2:2 (2 1)</File:YCbCrSubSampling>
+ <IFD0:ImageDescription>MINOLTA DIGITAL CAMERA         </IFD0:ImageDescription>
+ <IFD0:Make>Minolta Co., Ltd.</IFD0:Make>
+ <IFD0:Model>DiMAGE Xi</IFD0:Model>
+ <IFD0:Orientation>Horizontal (normal)</IFD0:Orientation>
+ <IFD0:XResolution>72</IFD0:XResolution>
+ <IFD0:YResolution>72</IFD0:YResolution>
+ <IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+ <IFD0:Software>V100-01</IFD0:Software>
+ <IFD0:ModifyDate>2004:07:24 13:05:19</IFD0:ModifyDate>
+ <IFD0:YCbCrPositioning>Co-sited</IFD0:YCbCrPositioning>
+ <ExifIFD:ExposureTime>1/750</ExifIFD:ExposureTime>
+ <ExifIFD:FNumber>2.8</ExifIFD:FNumber>
+ <ExifIFD:ExposureProgram>Program AE</ExifIFD:ExposureProgram>
+ <ExifIFD:ISO>50</ExifIFD:ISO>
+ <ExifIFD:ExifVersion>0220</ExifIFD:ExifVersion>
+ <ExifIFD:DateTimeOriginal>2004:07:24 13:05:19</ExifIFD:DateTimeOriginal>
+ <ExifIFD:CreateDate>2004:07:24 13:05:19</ExifIFD:CreateDate>
+ <ExifIFD:ComponentsConfiguration>Y, Cb, Cr, -</ExifIFD:ComponentsConfiguration>
+ <ExifIFD:CompressedBitsPerPixel>4</ExifIFD:CompressedBitsPerPixel>
+ <ExifIFD:BrightnessValue>8.5</ExifIFD:BrightnessValue>
+ <ExifIFD:ExposureCompensation>0</ExifIFD:ExposureCompensation>
+ <ExifIFD:MaxApertureValue>2.8</ExifIFD:MaxApertureValue>
+ <ExifIFD:MeteringMode>Multi-segment</ExifIFD:MeteringMode>
+ <ExifIFD:LightSource>Unknown</ExifIFD:LightSource>
+ <ExifIFD:Flash>Auto, Did not fire</ExifIFD:Flash>
+ <ExifIFD:FocalLength>6.0 mm</ExifIFD:FocalLength>
+ <ExifIFD:SubjectArea>800 600 400 300</ExifIFD:SubjectArea>
+ <ExifIFD:UserComment>; original file name was: PICT0003.JPG</ExifIFD:UserComment>
+ <ExifIFD:FlashpixVersion>0100</ExifIFD:FlashpixVersion>
+ <ExifIFD:ColorSpace>sRGB</ExifIFD:ColorSpace>
+ <ExifIFD:ExifImageWidth>1600</ExifIFD:ExifImageWidth>
+ <ExifIFD:ExifImageHeight>1200</ExifIFD:ExifImageHeight>
+ <ExifIFD:FileSource>Digital Camera</ExifIFD:FileSource>
+ <ExifIFD:SceneType>Directly photographed</ExifIFD:SceneType>
+ <ExifIFD:CustomRendered>Custom</ExifIFD:CustomRendered>
+ <ExifIFD:ExposureMode>Auto</ExifIFD:ExposureMode>
+ <ExifIFD:WhiteBalance>Auto</ExifIFD:WhiteBalance>
+ <ExifIFD:DigitalZoomRatio>0</ExifIFD:DigitalZoomRatio>
+ <ExifIFD:FocalLengthIn35mmFormat>38 mm</ExifIFD:FocalLengthIn35mmFormat>
+ <ExifIFD:SceneCaptureType>Standard</ExifIFD:SceneCaptureType>
+ <ExifIFD:GainControl>None</ExifIFD:GainControl>
+ <ExifIFD:Contrast>Normal</ExifIFD:Contrast>
+ <ExifIFD:Saturation>Normal</ExifIFD:Saturation>
+ <ExifIFD:Sharpness>Normal</ExifIFD:Sharpness>
+ <ExifIFD:SubjectDistanceRange>Distant</ExifIFD:SubjectDistanceRange>
+ <Minolta:MakerNoteVersion>MLT0</Minolta:MakerNoteVersion>
+ <Minolta:ColorMode>Natural color</Minolta:ColorMode>
+ <Minolta:MinoltaQuality>Fine</Minolta:MinoltaQuality>
+ <Minolta:MinoltaImageSize>1600x1200</Minolta:MinoltaImageSize>
+ <Minolta:MinoltaCameraSettings2>(Binary data 374 bytes, use -b option to extract)</Minolta:MinoltaCameraSettings2>
+ <InteropIFD:InteropIndex>R98 - DCF basic file (sRGB)</InteropIFD:InteropIndex>
+ <InteropIFD:InteropVersion>0100</InteropIFD:InteropVersion>
+ <IFD1:Compression>JPEG (old-style)</IFD1:Compression>
+ <IFD1:XResolution>72</IFD1:XResolution>
+ <IFD1:YResolution>72</IFD1:YResolution>
+ <IFD1:ResolutionUnit>inches</IFD1:ResolutionUnit>
+ <IFD1:ThumbnailOffset>1486</IFD1:ThumbnailOffset>
+ <IFD1:ThumbnailLength>4819</IFD1:ThumbnailLength>
+ <Composite:Aperture>2.8</Composite:Aperture>
+ <Composite:ImageSize>1600x1200</Composite:ImageSize>
+ <Composite:ScaleFactor35efl>6.3</Composite:ScaleFactor35efl>
+ <Composite:ShutterSpeed>1/750</Composite:ShutterSpeed>
+ <Composite:ThumbnailImage>(Binary data 4819 bytes, use -b option to extract)</Composite:ThumbnailImage>
+ <Composite:CircleOfConfusion>0.005 mm</Composite:CircleOfConfusion>
+ <Composite:FOV>50.7 deg</Composite:FOV>
+ <Composite:FocalLength35efl>6.0 mm (35 mm equivalent: 38.0 mm)</Composite:FocalLength35efl>
+ <Composite:HyperfocalDistance>2.71 m</Composite:HyperfocalDistance>
+ <Composite:LightValue>13.5</Composite:LightValue>
+</rdf:Description>
+</rdf:RDF>
