@@ -28,6 +28,7 @@ Dependencies
 		* nose (1.3.0)
 		* Pillow (2.2.1)
 		* pip (1.4.1)
+		* pyexiftool (added as a submodule from git: https://github.com/smarnach/pyexiftool.git)
 		* setuptools (0.9.8)
 		* simplejson (3.3.1)
 		* wsgiref (0.1.2)
