@@ -8,7 +8,6 @@ from os.path import abspath, exists, isdir, isfile, join, splitext
 from PIL import Image, ImageCms
 import re
 import simplejson as json
-import subprocess
 import sys
 import urllib2
 
@@ -17,6 +16,58 @@ RX_FLICRK_URL_SET = re.compile('^(http:\/\/www\.flickr\.com\/photos\/[^\/]+\/)(\
 RX_PLEIADES_URL = re.compile('^(http:\/\/pleiades\.stoa\.org\/places\/)(\d+)\/?.*$')
 
 PROFILE_SRGB = 'awibmanager/icc/sRGB_IEC61966-2-1_black_scaled.icc'
+
+fields = {
+    'copyright' : 
+        ("//info[@type='isaw']/copyright-holder", "copyright", "'%s'"),
+    'title' : 
+        ("//info[@type='isaw']/title", 'Headline', "'%s'"),
+    'keywords' : ("//info[@type='isaw']/typology/keyword", "keywords", "'%s'", ('sequence',)),
+    'description' : ("//info[@type='isaw']/description", '', "%s"),
+    'date' : 
+        ("//info[@type='isaw']/date-photographed | //info[@type='isaw']/date-scanned", "CreateDate", "'%s 00:00:01'", ('replace', '-', ':')),
+    'creator' : 
+        ("//info[@type='isaw']/photographer", "creator", "'%s'", ('alltext',)),
+    'ancient' : ("//info[@type='isaw']/geography/photographed-place/ancient-name", '', "%s"),
+    'modern' : ("//info[@type='isaw']/geography/photographed-place/modern-name", '',  "%s"),
+    'uri' : ("//info[@type='isaw']/geography/photographed-place/uri", '', "%s"),
+    'fda' : ("//info[@type='isaw']/fda-handle", '', "%s"),
+    'authority' : ("//info[@type='isaw']/authority", '', "%s") }
+
+SPACEPATTERN = u'\s+'
+
+def normalizetext(source):
+    """ Condense arbitrary spans of spaces and newlines in a unicode string down 
+    to a single space. Returns a unicode string. """
+    #return u' '.join(source.replace(u'\n', u' ').strip().split()).strip()
+    rex = re.compile(SPACEPATTERN, re.UNICODE)
+    return rex.sub(u' ', source).strip()
+
+def getalltext(elem):
+    """Create a document-ordered string from all text nodes in an XML element and its child nodes"""
+    text = elem.text or ""
+    for e in elem:
+        text += getalltext(e)
+        if e.tail:
+            text += e.tail
+    return text
+
+
+def getval(meta, field):
+    """
+    get the desired field from the metadata file
+    """
+    xpath = ''
+    try:
+        xpath = fields[field][0]
+    except:
+        print "failed to look up in fields where field = '%s', position 0" % field
+        raise
+    
+    if xpath != '':
+        val = meta.xpath(xpath)
+        return val
+
 
 def getMemoryProfile(buffer):
     try:
@@ -211,20 +262,17 @@ class AI():
             else:
                 im_flickr2.save(fn, format='PNG')
                 self.fn_flickr2 = fn
-                subprocess.call(['exiftool',
-                 '-tagsFromFile',
-                 self.fn_master,
-                 fn], shell=True)
-
-
+                # subprocess.call("exiftool -tagsFromFile %s %s" % (self.fn_master, fn))
 
         # create metadata
+        self.make_flickr_caption()
 
 
     def send_to_flickr(self):
         if isfile(self.fn_flickr2):
             flickr = getFlickr()
-            resp = flickr.upload(filename=self.fn_flickr2, title=self.title, description=self.description, tags=' '.join(self.keywords), is_public=0)
+            title = ' '.join((self.title, 'by', self.photographers[0]['name'], 'et al.' if len(self.photographers)>1 else ''))
+            resp = flickr.upload(filename=self.fn_flickr2, title=title, description=self.flickr_caption, tags=' '.join(self.keywords), is_public=0)
 
 
 
@@ -232,6 +280,109 @@ class AI():
         self.modified = True
         t = (mtype, xpath, seq, notes)
         self.mods.append(t)
+
+    def make_flickr_caption(self):
+        """ prepare an awib-style caption as used on flickr """
+
+        caption = ""
+        title = ''
+        description = ''
+        creator = ''
+        year = ''
+        copyright = ''
+        ancient = ''
+        modern = ''
+        uri = ''
+        fda = ''
+
+        meta = self.meta
+        
+        v = getval(meta, 'title')
+        vt = v[0].text
+        if vt is not None:
+            title = "%s" % vt
+            title = normalizetext(title)
+            caption += "AWIB-ISAW: %s" % title
+            
+        v = getval(meta, 'description')
+        vt = v[0].text
+        if vt is not None:
+            description = "%s" % vt
+            description = normalizetext(description)
+            caption += "\n%s" % description
+            
+        v = getval(meta, "creator")
+        vt = normalizetext(getalltext(v[0]))
+        if vt is not None:    
+            creator = "%s" % vt
+            creator = normalizetext(creator)
+            caption += " by %s" % creator
+            
+        v = getval(meta, "date")
+        try:
+            vt = v[0].text
+        except IndexError:
+            print "index error trying to get date"
+            raise
+            
+        if vt is not None:
+            year = vt.split('-')[0]
+            caption += " (%s)" % year
+            
+        v = getval(meta, "copyright")
+        vt = v[0].text
+        if vt is not None:
+            copyright = vt
+            copyright = normalizetext(copyright)
+            caption += "\ncopyright: "
+            if len(year) > 0:
+                caption += "%s " % year
+            caption += "%s (used with permission)" % copyright
+            
+        v = getval(meta, 'ancient')
+        vt = v[0].text
+        if vt is not None:
+            ancient = "%s" % vt
+            
+        v = getval(meta, 'modern')
+        vt = v[0].text
+        if vt is not None:
+            modern = "%s" % vt
+            
+        v = getval(meta, 'uri')
+        vt = v[0].text
+        if vt is not None:
+            if vt .startswith('http://pleiades.stoa.org'):
+                uri = vt
+            else:
+                uri = "http://atlantides.org/batlas/%s" % vt
+            
+        if len(ancient) > 0 or len(modern) > 0 or len(uri) > 0:
+            caption += "\nphotographed place: "
+            if len(ancient) > 0:
+                caption += "%s " % ancient
+            if len(modern) > 0:
+                caption += "(%s) " % modern
+            if len(uri) > 0:
+                caption += "[%s]" % uri
+                
+        v = getval(meta, 'fda')
+        vt = v[0].text
+        if vt is not None :
+            fda = vt
+            caption += "\narchival copy: %s" % fda
+            
+        v = getval(meta, 'authority')
+        vt = v[0].text
+        if vt is not None:
+            authority = vt
+            authority = normalizetext(authority)
+            caption += "\nauthority: %s" % authority
+            
+        caption += "\n\nPublished by the Institute for the Study of the Ancient World as part of the Ancient World Image Bank (AWIB). Further information: [http://www.nyu.edu/isaw/awib.htm]."
+    
+        self.flickr_caption = caption
+        return caption
 
     def verify_flickr(self):
         try:
